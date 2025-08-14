@@ -249,7 +249,7 @@ const flows = {
             <li>Ve a la “Ubicación de botones” y sigue la ruta seleccionada.</li>
             <li>Descarga el reporte o copia el enlace para compartir.</li>
           </ol>
-          <img src="img/ejemplo1.png" alt="Vista de ejemplo" class="msg-media">
+          <img src="./img/ejemplo1.png" alt="Vista de ejemplo" class="msg-media">
          <div class="msg-link">
   <a href="https://globaldenso.sharepoint.com/sites/NA_000451" target="_blank" rel="noopener">
     🔗 Enlace de ejemplo a SharePoint
@@ -347,7 +347,7 @@ const flows = {
             <li>Go to the “Buttons area” and follow the selected route.</li>
             <li>Download the report or copy the link.</li>
           </ol>
-img src="img/ejemplo1.png" alt="Vista de ejemplo" class="msg-media">
+<img src="./img/ejemplo1.png" alt="Vista de ejemplo" class="msg-media">
           <div class="msg-link">
   <a href="https://globaldenso.sharepoint.com/sites/NA_000451" target="_blank" rel="noopener">
     🔗 Enlace de ejemplo a SharePoint
@@ -511,5 +511,6 @@ const remaining = Math.max(0, MIN_PRELOADER_TIME - elapsed);
     renderNode('inicio');
   }, remaining);
 });
+
 
     
