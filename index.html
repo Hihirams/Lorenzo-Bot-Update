@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lorenzo SharePoint Helper – Demo (Flujo de decisiones)</title>
+  <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+  <div id="topbar"><span></span></div>
+
+  <div id="preloader">
+    <div class="preloader-wrap">
+      <img src="img/preload.png" alt="Logo" class="logo-img">
+    </div>
+  </div>
+
+  <div class="card" role="application" aria-label="SharePoint Helper Chat">
+    <div class="header">
+      <div class="avatar"aria-hidden="true"></div>
+      <div>
+        <div class="title">Denbot SharePoint Helper</div>
+        <div class="subtitle">Asistente de SharePoint</div>
+      </div>
+
+      <button id="themeToggleBtn" class="theme-toggle" aria-label="Cambiar tema" aria-pressed="false" title="Cambiar tema">
+        <svg class="moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z"/>
+        </svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.657-6.343 1.414-1.414M6.343 17.657l-1.414 1.414m0-13.657L6.343 6.343M17.657 17.657l1.414 1.414"/>
+          <circle cx="12" cy="12" r="4"/>
+        </svg>
+      </button>
+      <button id="langToggleBtn" class="lang-toggle" aria-label="Cambiar idioma" aria-pressed="false" title="Cambiar idioma">
+  🌐
+</button>
+
+      <div class="status"><span class="pulse" aria-hidden="true"></span> Ready</div>
+    </div>
+
+    <div class="quick" id="quickbar">
+      <button data-start="contenido_sitio">Contenido</button>
+      <button data-start="archivos">Contactos</button>
+      <button onclick="window.location.href='https://globaldenso.sharepoint.com/sites/NA_000451/SitePages/PRUEBAS-BOT.aspx'">🔙 Volver a SharePoint</button>
+      <button onclick="window.location.href='http://nsmx53.nadenso.net/portaldenso/default.aspx'">Intranet Denso</button>
+    </div>
+    
+    <div id="log" class="log" aria-live="polite">
+      <div class="msg bot">¡Hola! Soy DenBot. Trabajo con un <b>flujo de decisiones</b>Usa los 2 accesos rápidos o navega con las opciones dentro del chat.
+        <small>Denbot · ahora</small>
+      </div>
+    </div>
+
+    <form id="form" class="input" autocomplete="off" style="display:none">
+      <input id="q" type="text" placeholder="Escribe tu mensaje…" aria-label="Tu mensaje">
+      <button id="send" type="submit">Enviar</button>
+    </form>
+    <div class="footnote">
+      Versión 1.1.0
+    </div>
+  </div>
+<script src="js/main.js"></script>
+</body>
+</html>
