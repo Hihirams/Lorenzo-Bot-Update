@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lorenzo SharePoint Helper – Demo (Flujo de decisiones)</title>
   <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles/complaints.css">
 </head>
 <body>
-  <div id="topbar"><span></span></div>
+  <div id="topbar" aria-hidden="true"><span></span></div>
 
-  <div id="preloader">
+  <div id="preloader" role="status" aria-live="polite">
     <div class="preloader-wrap">
       <img src="img/preload.png" alt="Logo" class="logo-img">
     </div>
@@ -17,49 +18,141 @@
 
   <div class="card" role="application" aria-label="SharePoint Helper Chat">
     <div class="header">
-      <div class="avatar"aria-hidden="true"></div>
+      <div class="avatar" aria-hidden="true"></div>
       <div>
         <div class="title">Denbot SharePoint Helper</div>
         <div class="subtitle">Asistente de SharePoint</div>
       </div>
 
       <button id="themeToggleBtn" class="theme-toggle" aria-label="Cambiar tema" aria-pressed="false" title="Cambiar tema">
-        <svg class="moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z"/>
-        </svg>
-        <svg class="sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.657-6.343 1.414-1.414M6.343 17.657l-1.414 1.414m0-13.657L6.343 6.343M17.657 17.657l1.414 1.414"/>
-          <circle cx="12" cy="12" r="4"/>
-        </svg>
+        <img id="themeIcon" src="img/sun.png" alt="Tema claro">
       </button>
-      <button id="langToggleBtn" class="lang-toggle" aria-label="Cambiar idioma" aria-pressed="false" title="Cambiar idioma">
-  🌐
+
+<button id="openComplaintsBtn" class="btn-quejas" aria-haspopup="dialog" title="Enviar queja o sugerencia">
+  <!-- ícono simple -->
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="18" height="18">
+    <path d="M3 11a8 8 0 018-8h2a8 8 0 010 16h-1l-4 3v-3H9A8 8 0 013 11Z" stroke="currentColor" stroke-width="1.5"/>
+  </svg>
+  <span>Quejas</span>
 </button>
+
+      <button id="langToggleBtn" class="lang-toggle" aria-label="Cambiar idioma" aria-pressed="false" title="Cambiar idioma">
+        <img id="langFlag" src="img/mx-flag.png" alt="Bandera idioma">
+      </button>
 
       <div class="status"><span class="pulse" aria-hidden="true"></span> Ready</div>
     </div>
 
     <div class="quick" id="quickbar">
-      <button data-start="contenido_sitio">Contenido</button>
-      <button data-start="archivos">Contactos</button>
+      <button data-start="contenido_home">Contenido</button>
+      <button data-start="contacto_perm_ti">Contactos</button>
       <button onclick="window.location.href='https://globaldenso.sharepoint.com/sites/NA_000451/SitePages/PRUEBAS-BOT.aspx'">🔙 Volver a SharePoint</button>
       <button onclick="window.location.href='http://nsmx53.nadenso.net/portaldenso/default.aspx'">Intranet Denso</button>
     </div>
-    
-    <div id="log" class="log" aria-live="polite">
-      <div class="msg bot">¡Hola! Soy DenBot. Trabajo con un <b>flujo de decisiones</b>Usa los 2 accesos rápidos o navega con las opciones dentro del chat.
-        <small>Denbot · ahora</small>
-      </div>
+
+    <div id="log" class="log" aria-live="polite"></div>
+
+    <div class="footnote">Versión 1.2.0</div>
+  </div>
+<!-- Modal de Quejas / Sugerencias -->
+<div id="complaintsModal" class="modal" aria-hidden="true" aria-modal="true" role="dialog" aria-labelledby="complaintsTitle">
+  <div class="modal-card" role="document">
+    <div class="modal-header">
+      <div class="modal-title" id="complaintsTitle">Enviar queja o sugerencia</div>
+      <button class="modal-close" id="closeComplaintsBtn" aria-label="Cerrar (Esc)">✕</button>
     </div>
 
-    <form id="form" class="input" autocomplete="off" style="display:none">
-      <input id="q" type="text" placeholder="Escribe tu mensaje…" aria-label="Tu mensaje">
-      <button id="send" type="submit">Enviar</button>
+    <form id="complaintsForm" class="modal-body" novalidate>
+      <div class="grid-2">
+        <div>
+          <label for="tipo">Tipo</label>
+          <select id="tipo" name="tipo" required>
+            <option value="">Selecciona…</option>
+            <option>Queja</option>
+            <option>Bug / Error</option>
+            <option>Sugerencia</option>
+            <option>Idea de mejora</option>
+          </select>
+          <div class="error" data-error-for="tipo"></div>
+        </div>
+        <div>
+          <label for="severidad">Severidad</label>
+          <select id="severidad" name="severidad" required>
+            <option value="">Selecciona…</option>
+            <option>Baja</option>
+            <option>Media</option>
+            <option>Alta</option>
+            <option>Crítica</option>
+          </select>
+          <div class="error" data-error-for="severidad"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label for="modulo">Módulo (opcional)</label>
+          <input id="modulo" name="modulo" type="text" placeholder="p.ej., CRR, Inicio, Contacto" />
+        </div>
+        <div>
+          <label for="email">Tu correo (opcional)</label>
+          <input id="email" name="email" type="email" placeholder="tucorreo@empresa.com" />
+          <div class="error" data-error-for="email"></div>
+        </div>
+      </div>
+
+      <div>
+        <label for="asunto">Asunto</label>
+        <input id="asunto" name="asunto" type="text" maxlength="120" placeholder="Resumen breve" required />
+        <div class="row-between">
+          <div class="error" data-error-for="asunto"></div>
+          <div class="counter"><span id="asuntoCount">0</span>/120</div>
+        </div>
+      </div>
+
+      <div>
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" maxlength="1500" placeholder="Pasos, qué esperabas, etc." required></textarea>
+        <div class="row-between">
+          <div class="error" data-error-for="descripcion"></div>
+          <div class="counter"><span id="descCount">0</span>/1500</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label for="adjunto">Adjunto (imagen/PDF, máx. 5 MB)</label>
+          <input id="adjunto" name="adjunto" type="file" accept="image/*,application/pdf" />
+          <div class="help">Con webhook se envía en Base64. Por correo, adjúntalo manualmente.</div>
+          <div class="error" data-error-for="adjunto"></div>
+        </div>
+        <div class="consent-wrap">
+          <label for="consent">
+            <input id="consent" name="consent" type="checkbox" required />
+            Confirmo que se puede usar esta info para dar seguimiento.
+          </label>
+          <div class="error" data-error-for="consent"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn" id="btnBorrarBorrador" title="Eliminar borrador">Borrar borrador</button>
+        <button type="button" class="btn" id="btnPreview">Previsualizar</button>
+        <button type="submit" class="btn primary" id="btnEnviar">Enviar</button>
+      </div>
+
+      <div class="help">Se guarda automáticamente como borrador en este navegador.</div>
+      <div class="status-msg" id="statusMsg" aria-live="polite"></div>
     </form>
-    <div class="footnote">
-      Versión 1.1.0
-    </div>
   </div>
-<script src="js/main.js"></script>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+  // Opcional: define el webhook si quieres envío por POST (Power Automate / Logic Apps)
+  // window.COMPLAINTS_WEBHOOK = "https://<tu-endpoint-http-trigger>";
+</script>
+<script src="js/complaints.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
