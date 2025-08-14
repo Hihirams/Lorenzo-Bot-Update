@@ -1,91 +1,48 @@
-    const logEl = document.getElementById('log');
-    const quick = document.getElementById('quickbar');
+const logEl  = document.getElementById('log');
+const quick  = document.getElementById('quickbar');
 
-    const THEME_KEY = 'lorenzo-theme';
-    function getPreferredTheme(){
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === 'light' || saved === 'dark') return saved;
-      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    }
-    function applyTheme(theme){
-      document.documentElement.setAttribute('data-theme', theme);
-      const btn = document.getElementById('themeToggleBtn');
-      if (btn) btn.setAttribute('aria-pressed', theme === 'light');
-    }
-    let currentTheme = getPreferredTheme();
+const THEME_KEY = 'lorenzo-theme';
+
+function getPreferredTheme(){
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === 'light' || saved === 'dark') return saved;
+  return 'light';
+}
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggleBtn');
+  if (btn) btn.setAttribute('aria-pressed', theme === 'light');
+
+  const themeIcon = document.getElementById('themeIcon');
+  if (themeIcon){
+    themeIcon.src = theme === 'light' ? 'img/sun.png' : 'img/moon.png';
+    themeIcon.alt = theme === 'light' ? 'Tema claro' : 'Tema oscuro';
+  }
+}
+
+let currentTheme = getPreferredTheme();
+applyTheme(currentTheme);
+if (!localStorage.getItem(THEME_KEY)){
+  localStorage.setItem(THEME_KEY, currentTheme);
+}
+
+const themeBtn = document.getElementById('themeToggleBtn');
+if (themeBtn){
+  themeBtn.addEventListener('click', ()=>{
+    currentTheme = (document.documentElement.getAttribute('data-theme') === 'light') ? 'dark' : 'light';
+    localStorage.setItem(THEME_KEY, currentTheme);
     applyTheme(currentTheme);
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e)=>{
-      const saved = localStorage.getItem(THEME_KEY);
-      if (!saved){
-        currentTheme = e.matches ? 'light' : 'dark';
-        applyTheme(currentTheme);
-      }
-    });
-    const themeBtn = document.getElementById('themeToggleBtn');
-    if (themeBtn){
-      themeBtn.addEventListener('click', ()=>{
-        currentTheme = (document.documentElement.getAttribute('data-theme') === 'light') ? 'dark' : 'light';
-        localStorage.setItem(THEME_KEY, currentTheme);
-        applyTheme(currentTheme);
-      });
-    }
-    document.documentElement.style.colorScheme = 'dark light';
-
-    function setVh(){ document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`) }
-    setVh(); window.addEventListener('resize', setVh);
-
-   function addMsg(text, who='bot'){
-  const wrap = document.createElement('div');
-  wrap.className = 'msg ' + (who === 'me' ? 'me' : 'bot');
-  wrap.textContent = text;
-  const meta = document.createElement('small');
-  meta.textContent = (who==='me' ? i18n[currentLang].me_you : i18n[currentLang].bot) + ' · ' + new Date().toLocaleTimeString();
-  wrap.appendChild(meta);
-  logEl.appendChild(wrap);
-  logEl.scrollTop = logEl.scrollHeight;
-  return wrap;
-}
-function addHtml(html, who='bot'){
-  const wrap = document.createElement('div');
-  wrap.className = 'msg ' + (who === 'me' ? 'me' : 'bot');
-  wrap.innerHTML = html;
-  const meta = document.createElement('small');
-  meta.textContent = (who==='me' ? i18n[currentLang].me_you : i18n[currentLang].bot) + ' · ' + new Date().toLocaleTimeString();
-  wrap.appendChild(meta);
-  logEl.appendChild(wrap);
-  logEl.scrollTop = logEl.scrollHeight;
-  return wrap;
+  });
 }
 
-    function addTyping(){
-  const d = document.createElement('div');
-  d.className = 'msg bot';
-  d.innerHTML = `<span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><small>${i18n[currentLang].typing}</small>`;
-  logEl.appendChild(d);
-  logEl.scrollTop = logEl.scrollHeight;
-  return d;
+document.documentElement.style.colorScheme = 'dark light';
+
+function setVh(){
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
 }
-
-function renderNode(nodeKey){
-  currentNode = nodeKey;
-  const node = flows[currentLang][nodeKey];
-  const typing = addTyping();
-  setTimeout(()=>{
-    typing.remove();
-
-    const raw = (typeof node.text === 'function') ? node.text(selectionState) : node.text;
-    const html = (typeof raw === 'string' && raw.includes('<'))
-      ? raw
-      : String(raw).replace(/\n/g, '<br>');
-
-    const box = addHtml(html, 'bot');
-    const opts = renderOptions(nodeKey);
-    box.dataset.nodeKey = nodeKey;
-    box.appendChild(opts);
-  }, 350);
-}
-
-
+setVh();
+window.addEventListener('resize', setVh);
 
 const LANG_KEY = 'lorenzo-lang';
 let currentLang = localStorage.getItem(LANG_KEY) || 'es';
@@ -96,7 +53,7 @@ const i18n = {
     subtitle: "Asistente de SharePoint",
     statusReady: " Listo",
     typing: "Denbot · escribiendo…",
-    footnote: "Versión 1.1.0",
+    footnote: "Versión 1.2.0",
     quick_acceso: "Contenido",
     quick_archivos: "Contacto",
     quick_sp: "🔙 Volver a SharePoint",
@@ -114,7 +71,7 @@ const i18n = {
     subtitle: "SharePoint Assistant",
     statusReady: " Ready",
     typing: "Denbot · typing…",
-    footnote: "Versión 1.1.0",
+    footnote: "Version 1.2.0",
     quick_acceso: "Content",
     quick_archivos: "Contact",
     quick_sp: "🔙 Back to SharePoint",
@@ -125,7 +82,7 @@ const i18n = {
     bot: "bot",
     input_placeholder: "Type your message…",
     send: "Send",
-    intro: "Hi! I’m Denbot. I now work with a <b>decision flow</b> . Use the 2 quick actions or navigate with the chips in chat."
+    intro: "Hi! I’m Denbot. I now work with a <b>decision flow</b>. Use the 2 quick actions or navigate with the chips in chat."
   }
 };
 
@@ -136,11 +93,19 @@ function toggleLanguage(){
 }
 
 function applyLanguage(rerender=false){
-  document.querySelector('.title').textContent = i18n[currentLang].title;
-  document.querySelector('.subtitle').textContent = i18n[currentLang].subtitle;
+  const flagImg = document.getElementById('langFlag');
+  if (flagImg){
+    flagImg.src = currentLang === 'es' ? 'img/mx-flag.png' : 'img/us-flag.png';
+    flagImg.alt = currentLang === 'es' ? 'Español' : 'English';
+  }
+
+  const title = document.querySelector('.title');
+  const subtitle = document.querySelector('.subtitle');
+  if (title)    title.textContent = i18n[currentLang].title;
+  if (subtitle) subtitle.textContent = i18n[currentLang].subtitle;
 
   const statusEl = document.querySelector('.status');
-  statusEl.innerHTML = '<span class="pulse" aria-hidden="true"></span>' + i18n[currentLang].statusReady;
+  if (statusEl) statusEl.innerHTML = '<span class="pulse" aria-hidden="true"></span>' + i18n[currentLang].statusReady;
 
   const qBtns = document.querySelectorAll('#quickbar > button');
   if (qBtns[0]) qBtns[0].textContent = i18n[currentLang].quick_acceso;
@@ -148,14 +113,10 @@ function applyLanguage(rerender=false){
   if (qBtns[2]) qBtns[2].textContent = i18n[currentLang].quick_sp;
   if (qBtns[3]) qBtns[3].textContent = i18n[currentLang].quick_intranet;
 
-  const input = document.getElementById('q');
-  if (input) input.placeholder = i18n[currentLang].input_placeholder;
-  const send = document.getElementById('send');
-  if (send) send.textContent = i18n[currentLang].send;
   const foot = document.querySelector('.footnote');
   if (foot) foot.textContent = i18n[currentLang].footnote;
 
-  if (rerender) {
+  if (rerender){
     logEl.innerHTML = '';
     addHtml(i18n[currentLang].intro, 'bot');
     renderNode(currentNode || 'inicio');
@@ -163,6 +124,47 @@ function applyLanguage(rerender=false){
 }
 
 document.getElementById('langToggleBtn')?.addEventListener('click', toggleLanguage);
+
+function addMsg(text, who='bot'){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + (who === 'me' ? 'me' : 'bot');
+  wrap.textContent = text;
+
+  const meta = document.createElement('small');
+  meta.textContent =
+    (who==='me' ? i18n[currentLang].me_you : i18n[currentLang].bot) +
+    ' · ' + new Date().toLocaleTimeString();
+
+  wrap.appendChild(meta);
+  logEl.appendChild(wrap);
+  logEl.scrollTop = logEl.scrollHeight;
+  return wrap;
+}
+
+function addHtml(html, who='bot'){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + (who === 'me' ? 'me' : 'bot');
+  wrap.innerHTML = html;
+
+  const meta = document.createElement('small');
+  meta.textContent =
+    (who==='me' ? i18n[currentLang].me_you : i18n[currentLang].bot) +
+    ' · ' + new Date().toLocaleTimeString();
+
+  wrap.appendChild(meta);
+  logEl.appendChild(wrap);
+  logEl.scrollTop = logEl.scrollHeight;
+  return wrap;
+}
+
+function addTyping(){
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = `<span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><small>${i18n[currentLang].typing}</small>`;
+  logEl.appendChild(d);
+  logEl.scrollTop = logEl.scrollHeight;
+  return d;
+}
 
 const flows = {
   es: {
@@ -173,6 +175,21 @@ const flows = {
         { label: "Contacto", next: "contacto_perm_ti", set: { section: "Contacto" } },
         { label: "🔙 Volver a SharePoint", link: "https://globaldenso.sharepoint.com/sites/NA_000451/SitePages/PRUEBAS-BOT.aspx" }
       ]
+    },
+
+    contacto_perm_ti: {
+      text: `
+        <p><b>Contacto (demo)</b></p>
+        <p>Para temas de <b>permisos</b> o <b>TI</b>, indica:</p>
+        <ul style="margin:6px 0 10px; padding-left:18px">
+          <li>Tu <b>usuario/red</b> y área.</li>
+          <li>El <b>sitio o carpeta</b> de SharePoint.</li>
+          <li>Tipo de acceso requerido (lectura/edición).</li>
+        </ul>
+        <p>Ejemplo de solicitud clara:<br>
+        “Necesito <b>edición</b> en <i>NA_000451/CRR/FY25/DMEX/ME</i> para subir reportes semanales”.</p>
+      `,
+      options: [{ label: "Volver al inicio", next: "inicio" }]
     },
 
     contenido_home: {
@@ -249,18 +266,15 @@ const flows = {
             <li>Ve a la “Ubicación de botones” y sigue la ruta seleccionada.</li>
             <li>Descarga el reporte o copia el enlace para compartir.</li>
           </ol>
-          <img src="./img/ejemplo1.png" alt="Vista de ejemplo" class="msg-media">
-         <div class="msg-link">
-  <a href="https://globaldenso.sharepoint.com/sites/NA_000451" target="_blank" rel="noopener">
-    🔗 Enlace de ejemplo a SharePoint
-  </a>
-</div>
-
+          <img src="img/ejemplo1.png" alt="Vista de ejemplo" class="msg-media">
+          <div class="msg-link">
+            <a href="https://globaldenso.sharepoint.com/sites/NA_000451" target="_blank" rel="noopener">
+              🔗 Enlace de ejemplo a SharePoint
+            </a>
+          </div>
         `;
       },
-      options: [
-        { label: "Volver al inicio", next: "inicio" }
-      ]
+      options: [{ label: "Volver al inicio", next: "inicio" }]
     },
 
     demo: {
@@ -269,17 +283,31 @@ const flows = {
     }
   },
 
-
-  
   en: {
     inicio: {
       text: "What do you need?",
       options: [
         { label: "Content", next: "contenido_home", set: { section: "Content" } },
-        { label: "Contact (demo)", next: "demo" },
+        { label: "Contact", next: "contacto_perm_ti", set: { section: "Contact" } },
         { label: "🔙 Back to SharePoint", link: "https://globaldenso.sharepoint.com/sites/NA_000451/SitePages/PRUEBAS-BOT.aspx" }
       ]
     },
+
+    contacto_perm_ti: {
+      text: `
+        <p><b>Contact (demo)</b></p>
+        <p>For <b>permissions</b> or <b>IT</b> topics, please include:</p>
+        <ul style="margin:6px 0 10px; padding-left:18px">
+          <li>Your <b>network/user</b> and area.</li>
+          <li>The <b>SharePoint site/folder</b>.</li>
+          <li>Access type needed (read/edit).</li>
+        </ul>
+        <p>Clear request example:<br>
+        “I need <b>edit</b> access to <i>NA_000451/CRR/FY25/DMEX/ME</i> to upload weekly reports”.</p>
+      `,
+      options: [{ label: "Back to start", next: "inicio" }]
+    },
+
     contenido_home: {
       text: "Content — choose a module",
       options: [
@@ -287,6 +315,7 @@ const flows = {
         { label: "3Y (demo)", next: "demo" }
       ]
     },
+
     crr_enunciado: {
       text: "CRR — Select statement",
       options: [
@@ -295,6 +324,7 @@ const flows = {
         { label: "Close Meeting (demo)", next: "demo", set: { statement: "Close Meeting" } }
       ]
     },
+
     crr_fy: {
       text: "Reports · CRR — Select fiscal year",
       options: [
@@ -305,6 +335,7 @@ const flows = {
         { label: "FY25", next: "crr_region", set: { fiscalYear: "FY25" } }
       ]
     },
+
     crr_region: {
       text: "Reports · CRR · FY25 — Select region",
       options: [
@@ -313,6 +344,7 @@ const flows = {
         { label: "BUX (demo)", next: "demo", set: { region: "BUX" } }
       ]
     },
+
     crr_bu: {
       text: "Reports · CRR · FY25 · DMEX — Select Business Unit",
       options: [
@@ -324,6 +356,7 @@ const flows = {
         { label: "LPP (demo)", next: "demo", set: { businessUnit: "LPP" } }
       ]
     },
+
     crr_producto: {
       text: "Reports · CRR · FY25 · DMEX · ME — Select product",
       options: [
@@ -333,6 +366,7 @@ const flows = {
         { label: "HUD (demo)", next: "demo", set: { product: "HUD" } }
       ]
     },
+
     crr_resumen: {
       text: (s)=>{
         const parts = [s.section, s.module, s.statement, s.fiscalYear, s.region, s.businessUnit, s.product]
@@ -341,23 +375,24 @@ const flows = {
         return `
           <p><b>Selection summary</b></p>
           <p>You chose: <b>${parts}</b>.</p>
+
           <p><b>Instructions (example):</b></p>
           <ol style="margin:6px 0 10px; padding-left:18px">
             <li>Open the SharePoint site.</li>
             <li>Go to the “Buttons area” and follow the selected route.</li>
             <li>Download the report or copy the link.</li>
           </ol>
-<img src="./img/ejemplo1.png" alt="Vista de ejemplo" class="msg-media">
+          <img src="img/ejemplo1.png" alt="Example view" class="msg-media">
           <div class="msg-link">
-  <a href="https://globaldenso.sharepoint.com/sites/NA_000451" target="_blank" rel="noopener">
-    🔗 Enlace de ejemplo a SharePoint
-  </a>
-</div>
-
+            <a href="https://globaldenso.sharepoint.com/sites/NA_000451" target="_blank" rel="noopener">
+              🔗 Example link to SharePoint
+            </a>
+          </div>
         `;
       },
       options: [{ label: "Back to start", next: "inicio" }]
     },
+
     demo: {
       text: "Demo route. Functional path: Content → CRR → Reports → FY25 → DMEX → ME → CLUSTER.",
       options: [{ label: "Back to start", next: "inicio" }]
@@ -365,9 +400,10 @@ const flows = {
   }
 };
 
-
 const selectionState = {};
 const stateStack = [];
+const stack = [];
+let currentNode = 'inicio';
 
 function applySetFromBtn(btn){
   if (!btn.dataset.set) return;
@@ -398,8 +434,6 @@ function resetSelectionState(){
   stateStack.length = 0;
 }
 
-
-    const stack = [];
 function renderOptions(nodeKey){
   const node = flows[currentLang][nodeKey];
   const group = document.createElement('div');
@@ -412,6 +446,7 @@ function renderOptions(nodeKey){
     back.dataset.back = '1';
     group.appendChild(back);
   }
+
   const restart = document.createElement('button');
   restart.className = 'nav-chip';
   restart.textContent = i18n[currentLang].restart;
@@ -430,12 +465,30 @@ function renderOptions(nodeKey){
   return group;
 }
 
+function renderNode(nodeKey){
+  currentNode = nodeKey;
+  const node = flows[currentLang][nodeKey];
+  if (!node){
+    console.warn('Nodo inexistente:', nodeKey);
+    return;
+  }
+  const typing = addTyping();
+  setTimeout(()=>{
+    typing.remove();
 
-let currentNode = 'inicio';
+    const raw = (typeof node.text === 'function') ? node.text(selectionState) : node.text;
+    const html = (typeof raw === 'string' && raw.includes('<')) ? raw : String(raw).replace(/\n/g, '<br>');
+
+    const box = addHtml(html, 'bot');
+    const opts = renderOptions(nodeKey);
+    box.dataset.nodeKey = nodeKey;
+    box.appendChild(opts);
+  }, 350);
+}
 
 logEl.addEventListener('click', (e)=>{
   const btn = e.target.closest('button.option-chip, button.nav-chip');
-  if(!btn) return;
+  if (!btn) return;
 
   if (btn.dataset.restart){
     addMsg(i18n[currentLang].restart, 'me');
@@ -455,49 +508,48 @@ logEl.addEventListener('click', (e)=>{
 
   if (btn.dataset.link){
     addMsg(btn.textContent, 'me');
-    const url = btn.dataset.link;
-    window.open(url, '_blank');
+    window.open(btn.dataset.link, '_blank');
     return;
   }
 
   if (btn.dataset.next){
     addMsg(btn.textContent, 'me');
     applySetFromBtn(btn);
-
-    const next = btn.dataset.next;
     const currentMsg = btn.closest('.msg');
     const currentKey = currentMsg?.dataset.nodeKey || 'inicio';
     if (currentKey) stack.push(currentKey);
-
-    renderNode(next);
+    renderNode(btn.dataset.next);
   }
 });
 
+quick.addEventListener('click', (e)=>{
+  const b = e.target.closest('button[data-start]');
+  if (!b) return;
+  const want = b.getAttribute('data-start') || 'inicio';
+  const exists = !!flows[currentLang][want];
+  addMsg(b.textContent, 'me');
+  stack.length = 0;
+  renderNode(exists ? want : 'inicio');
+});
 
+/** =========================
+ *  Preloader + Topbar
+ * ========================= */
+const MIN_PRELOADER_TIME = 2000;
+const bar = document.querySelector('#topbar span');
+let p = 0;
+const startTime = Date.now();
+const tick = setInterval(()=>{
+  p += Math.max(5, (100 - p) * 0.25);
+  if (p > 100) p = 100;
+  bar.style.width = p + '%';
+  if (p === 100) clearInterval(tick);
+}, 80);
 
-    quick.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button[data-start]');
-      if(!btn) return;
-      const start = btn.getAttribute('data-start');
-      addMsg(btn.textContent, 'me');
-      stack.length = 0;
-      renderNode(start || 'inicio');
-    });
-
-    const MIN_PRELOADER_TIME = 2000;
-    const bar = document.querySelector('#topbar span');
-    let p = 0;
-    const startTime = Date.now();
-    const tick = setInterval(()=>{
-      p += Math.max(5, (100 - p) * 0.25);
-      if (p > 100) p = 100;
-      bar.style.width = p + '%';
-      if (p === 100) clearInterval(tick);
-    }, 80);
-
-    const elapsed = Date.now() - startTime;
+const elapsed = Date.now() - startTime;
 const remaining = Math.max(0, MIN_PRELOADER_TIME - elapsed);
-  window.addEventListener('load', ()=>{
+
+window.addEventListener('load', ()=>{
   setTimeout(()=>{
     document.getElementById('preloader')?.classList.add('hidden');
     const topbar = document.getElementById('topbar');
@@ -511,6 +563,3 @@ const remaining = Math.max(0, MIN_PRELOADER_TIME - elapsed);
     renderNode('inicio');
   }, remaining);
 });
-
-
-    
