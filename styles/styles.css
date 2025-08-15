@@ -337,3 +337,41 @@ body{
   *{ animation:none !important; transition:none !important }
   #topbar span{ animation:none !important }
 }
+
+/* ===== Mobile ultra (≈ iPhone 12 mini / 378px) ===== */
+@media (max-width: 420px){
+  .header{
+    flex-wrap: wrap;               /* permite 2 filas */
+    row-gap: 8px;
+  }
+
+  /* La etiqueta de estado ocupa su propia fila */
+  .header .status{
+    order: 2;
+    margin-left: 0;
+    flex-basis: 100%;              /* rompe línea */
+  }
+
+  /* Controles: Quejas + Tema + Idioma en la 2ª fila, a la derecha */
+  #openComplaintsBtn{              /* Quejas */
+    order: 3;
+    position: static !important;   /* anula el absolute del desktop */
+    margin-left: auto;             /* empuja el grupo a la derecha */
+    height: 36px;
+    padding: 0 12px;
+  }
+
+  #themeToggleBtn{                 /* Tema */
+    order: 4;
+    position: static;
+    margin-left: 8px;
+    width: 40px; height: 40px;     /* mejor touch target */
+  }
+
+  #langToggleBtn{                  /* Idioma */
+    order: 5;
+    position: static;
+    margin-left: 8px;
+    width: 40px; height: 40px;     /* mejor touch target */
+  }
+}
